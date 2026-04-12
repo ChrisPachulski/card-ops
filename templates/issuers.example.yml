@@ -1,0 +1,93 @@
+# Card-Ops Issuer Configuration
+# Copy to issuers.yml and customize.
+# Used by scan mode to check for new offers.
+
+tracked_issuers:
+  - name: "Chase"
+    enabled: true
+    cards_url: "https://creditcards.chase.com/all-credit-cards"
+    notes: "5/24 rule applies -- no approval if 5+ new cards in 24 months"
+    key_products:
+      - "Sapphire Preferred"
+      - "Sapphire Reserve"
+      - "Freedom Unlimited"
+      - "Freedom Flex"
+      - "Ink Business Preferred"
+
+  - name: "American Express"
+    enabled: true
+    cards_url: "https://www.americanexpress.com/us/credit-cards/"
+    notes: "Once-per-lifetime signup bonus rule"
+    key_products:
+      - "Gold Card"
+      - "Platinum Card"
+      - "Blue Cash Preferred"
+      - "Blue Cash Everyday"
+      - "Delta SkyMiles Gold"
+
+  - name: "Citi"
+    enabled: true
+    cards_url: "https://www.citi.com/credit-cards/compare-credit-cards"
+    notes: "48-month rule for signup bonuses"
+    key_products:
+      - "Double Cash"
+      - "Custom Cash"
+      - "Premier"
+      - "Strata Premier"
+
+  - name: "Capital One"
+    enabled: true
+    cards_url: "https://www.capitalone.com/credit-cards/"
+    notes: "Generally 1 card per person rule"
+    key_products:
+      - "Venture X"
+      - "Venture"
+      - "SavorOne"
+      - "Quicksilver"
+
+  - name: "Discover"
+    enabled: true
+    cards_url: "https://www.discover.com/credit-cards/"
+    notes: "5% rotating categories, pre-approval tool available"
+    key_products:
+      - "it Cash Back"
+      - "it Miles"
+
+  - name: "Wells Fargo"
+    enabled: true
+    cards_url: "https://creditcards.wellsfargo.com/"
+    key_products:
+      - "Active Cash"
+      - "Autograph"
+      - "Autograph Journey"
+
+  - name: "Bank of America"
+    enabled: true
+    cards_url: "https://www.bankofamerica.com/credit-cards/"
+    notes: "Preferred Rewards tiers boost earn rates"
+    key_products:
+      - "Premium Rewards"
+      - "Customized Cash Rewards"
+      - "Unlimited Cash Rewards"
+
+  - name: "US Bank"
+    enabled: true
+    cards_url: "https://www.usbank.com/credit-cards.html"
+    key_products:
+      - "Altitude Reserve"
+      - "Altitude Go"
+      - "Cash+"
+
+# Category filters -- when scanning aggregator sites
+offer_filter:
+  include_types:
+    - "cash_back"
+    - "travel"
+    - "hotel"
+    - "airline"
+    - "business"
+    - "balance_transfer"
+  exclude_types:
+    - "secured"         # Unless user specifies credit-building goal
+    - "student"
+  min_signup_bonus_value: 100  # USD equivalent

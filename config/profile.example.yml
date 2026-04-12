@@ -1,0 +1,75 @@
+# Card-Ops Financial Profile
+# Copy this to profile.yml and fill in your details.
+# This file is YOUR data -- system updates will never overwrite it.
+
+identity:
+  name: ""
+  email: ""
+  location: ""          # city, state
+  timezone: ""          # e.g., PST, EST, CST
+
+credit:
+  score_range: ""       # e.g., "740-760"
+  score_bureau: ""      # e.g., "Experian FICO 8" or "TransUnion VantageScore 3.0"
+  annual_income: ""     # e.g., "$120,000"
+  total_credit_limit: "" # across all cards
+  utilization_target: "" # e.g., "< 10%"
+
+current_cards:
+  # List every card you currently hold. This prevents recommendations
+  # for cards you already have and enables portfolio optimization.
+  #
+  # - issuer: "Chase"
+  #   card: "Sapphire Preferred"
+  #   annual_fee: "$95"
+  #   opened: "2023-06"
+  #   credit_limit: "$15,000"
+  #   category: "travel"       # travel, cash_back, business, hotel, airline, store
+  #   primary_use: "dining and travel"
+  #   notes: "Considering upgrade to Reserve"
+
+monthly_spending:
+  # Estimate your average monthly spend per category.
+  # Statement parsing will refine these numbers over time.
+  total: ""             # e.g., "$4,500"
+  categories:
+    groceries: ""       # e.g., "$600"
+    dining: ""          # e.g., "$400"
+    travel: ""          # e.g., "$300"
+    gas: ""             # e.g., "$200"
+    online_shopping: "" # e.g., "$500"
+    subscriptions: ""   # e.g., "$150"
+    utilities: ""       # e.g., "$250"
+    other: ""           # everything else
+
+reward_strategy:
+  # What are you optimizing for?
+  primary_goal: ""      # "cash_back" | "travel_points" | "hotel_perks" | "airline_miles" | "category_bonuses"
+  preferred_programs:   # e.g., ["Chase Ultimate Rewards", "Amex Membership Rewards"]
+    - ""
+  travel_frequency: ""  # "rarely" | "monthly" | "weekly"
+  preferred_airlines:
+    - ""
+  preferred_hotels:
+    - ""
+  minimum_annual_fee_roi: "" # e.g., "$200" -- card must return at least this in value to justify fee
+
+constraints:
+  # Hard limits on what cards you'll consider
+  max_annual_fee: ""    # e.g., "$250" or "none" for no-fee only
+  min_signup_bonus: ""  # e.g., "$200" or "none"
+  max_cards_per_year: "" # to manage hard inquiries, e.g., "2"
+  avoid_issuers: []     # e.g., ["Discover"] if you have bad experiences
+  chase_524_status: ""  # "under" | "over" | "unknown" -- critical for Chase applications
+  chase_524_count: ""   # exact count if known (e.g., "3") -- enables precise planning
+  amex_once_per_lifetime: [] # Amex cards you've had before (can't get bonus again)
+  amex_credit_card_count: "" # current number of Amex credit cards (max 5)
+  recent_inquiries_6mo: ""  # total hard inquiries in last 6 months (Citi 6/6 rule)
+  recent_cards_24mo: ""     # total new cards opened in 24 months (across all issuers)
+  us_bank_relationship: ""  # "yes" | "no" -- checking/savings account (needed for Altitude Reserve)
+  bank_relationships: []    # e.g., ["Chase checking", "Amex savings", "US Bank checking"]
+  upcoming_major_credit_events: "" # e.g., "mortgage application 2026-09" -- triggers application pause advisory
+  inquiry_counts_by_bureau:   # helps plan bureau-aware application sequencing
+    experian: ""              # e.g., "3"
+    transunion: ""            # e.g., "2"
+    equifax: ""               # e.g., "4"

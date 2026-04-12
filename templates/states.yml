@@ -1,0 +1,49 @@
+# Canonical states for card-ops pipeline
+# All entries in cards.md MUST use one of these states.
+# Scripts validate against this file.
+
+states:
+  - id: evaluated
+    label: Evaluated
+    description: "Card offer evaluated with report, pending decision"
+    dashboard_group: evaluated
+
+  - id: applied
+    label: Applied
+    description: "Application submitted to issuer"
+    dashboard_group: applied
+
+  - id: approved
+    label: Approved
+    description: "Application approved, card issued or pending delivery"
+    dashboard_group: approved
+
+  - id: rejected
+    label: Rejected
+    description: "Application denied by issuer"
+    dashboard_group: rejected
+
+  - id: pended
+    label: Pended
+    description: "Application under manual review by issuer"
+    dashboard_group: applied
+
+  - id: declined
+    label: Declined
+    description: "User declined an approved card (e.g., terms changed, better option found)"
+    dashboard_group: closed
+
+  - id: active
+    label: Active
+    description: "Card in wallet, actively used"
+    dashboard_group: active
+
+  - id: closed
+    label: Closed
+    description: "Account closed by user or issuer"
+    dashboard_group: closed
+
+  - id: skip
+    label: SKIP
+    description: "Does not fit profile, do not apply"
+    dashboard_group: skip
