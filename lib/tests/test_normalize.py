@@ -180,6 +180,156 @@ from lib.normalize import normalize_merchant, get_uncategorized
             "RANDOM UNKNOWN MERCHANT 12345",
             ("RANDOM UNKNOWN MERCHANT 12345", "Other", "Uncategorized"),
         ),
+        # ---- New patterns (high-volume merchants added in normalization expansion) ----
+        # Wine & Spirits stores
+        (
+            "WINE AND SPIRITS 4814 EASTON PA",
+            ("PA Wine & Spirits", "Alcohol", "Liquor Store"),
+        ),
+        (
+            "36TH AVE WINE & SPIRITS LONG ISLAND C NY",
+            ("36th Ave Wine & Spirits", "Alcohol", "Liquor Store"),
+        ),
+        (
+            "BOURBON STREET MEMORIAL PHILLIPSBURG NJ",
+            ("Bourbon Street Wine", "Alcohol", "Liquor Store"),
+        ),
+        # Groceries
+        (
+            "KEY FOOD 1620 LNG ISLND CTY NY",
+            ("Key Food", "Groceries", "Supermarket"),
+        ),
+        (
+            "IMPERFECT FOODS HTTPSWWW.IMPE CA",
+            ("Imperfect Foods", "Groceries", "Delivery"),
+        ),
+        # Dining -- local restaurants
+        (
+            "TST* MCCALL COLLECTIVE BR ALLENTOWN PA",
+            ("McCall Collective", "Dining", "Brewery"),
+        ),
+        (
+            "BWW EASTON 297 678-514-4100 PA",
+            ("Buffalo Wild Wings", "Dining", "Casual Dining"),
+        ),
+        (
+            "TAKUMI SUSHI EASTON PA",
+            ("Takumi Sushi", "Dining", "Restaurant"),
+        ),
+        (
+            "3RD & FERRY FISH MARKET EASTON PA",
+            ("3rd & Ferry Fish Market", "Dining", "Restaurant"),
+        ),
+        (
+            "DINER 248 EASTON PA",
+            ("Diner 248", "Dining", "Casual Dining"),
+        ),
+        (
+            "OWOWCOW EASTON GLENDON PA",
+            ("Owowcow Creamery", "Dining", "Dessert"),
+        ),
+        # Healthcare
+        (
+            "BH* BETTERHELP HTTPSWWW.BETT CA",
+            ("BetterHelp", "Healthcare", "Mental Health"),
+        ),
+        (
+            "COURT SQUARE ANIMAL HOSPI LONG ISLAND C NY",
+            ("Court Square Animal Hospital", "Healthcare", "Veterinary"),
+        ),
+        # Shopping
+        (
+            "WAL-MART #2252 EASTON PA",
+            ("Walmart", "Shopping", "Department Store"),
+        ),
+        (
+            "WM SUPERCENTER #2252 EASTON PA",
+            ("Walmart", "Shopping", "Department Store"),
+        ),
+        (
+            "HOBBY LOBBY #432 EASTON PA",
+            ("Hobby Lobby", "Shopping", "Crafts"),
+        ),
+        (
+            "BARNES & NOBLE #2210 EASTON PA",
+            ("Barnes & Noble", "Shopping", "Books"),
+        ),
+        (
+            "AE OUTF ONLINE00029538 785-2297900 KS",
+            ("American Eagle", "Shopping", "Clothing"),
+        ),
+        (
+            "T J MAXX #1317 FARMINGDALE NY",
+            ("TJ Maxx", "Shopping", "Discount"),
+        ),
+        (
+            "EBAY INC. 866-779-3229 CA",
+            ("eBay", "Shopping", "Online"),
+        ),
+        (
+            "Etsy.com 718-8557955 NY",
+            ("Etsy", "Shopping", "Online"),
+        ),
+        # Entertainment / Gaming
+        (
+            "PLAYSTATION NETWORK 800-345-7669 CA",
+            ("PlayStation Network", "Entertainment", "Gaming"),
+        ),
+        (
+            "TCGPLAYER.COM 315-501-0478 NY",
+            ("TCGplayer", "Entertainment", "Games"),
+        ),
+        (
+            "STEAMGAMES.COM 4259522985425-8899642 WA",
+            ("Steam", "Entertainment", "Gaming"),
+        ),
+        # Software
+        (
+            "INTUIT *QBooks Online CL.INTUIT.COM CA",
+            ("QuickBooks", "Software", "Finance"),
+        ),
+        # Gas -- 7-Eleven
+        (
+            "7-ELEVEN 33989 FARMINGDALE NY",
+            ("7-Eleven", "Gas", "Convenience"),
+        ),
+        # Travel
+        (
+            "E-Z*PASSNY REBILL 800-333-8655 NY",
+            ("E-ZPass", "Travel", "Tolls"),
+        ),
+        (
+            "MTA*METROCARD MACHINE NEW YORK NY",
+            ("MTA MetroCard", "Travel", "Transit"),
+        ),
+        # Home -- Shellpoint mortgage must NOT match Shell gas
+        (
+            "Newrez-Shellpoin Web Pmts",
+            ("Newrez Shellpoint", "Home", "Mortgage"),
+        ),
+        # Government
+        (
+            "PA DRIVER & VEHICLE SERV WWW.PA.GOV PA",
+            ("PennDOT", "Shopping", "Government"),
+        ),
+        (
+            "NEW YORK STATE DMV 518-4740904 NY",
+            ("NY DMV", "Shopping", "Government"),
+        ),
+        # Personal Care
+        (
+            "EWC EASTON 0485 Easton PA",
+            ("European Wax Center", "Shopping", "Personal Care"),
+        ),
+        (
+            "CLR*PureBarre6104199334 610-4199334 PA",
+            ("Pure Barre", "Healthcare", "Fitness"),
+        ),
+        # Utilities
+        (
+            "EASTON SUBURBAN WATER 610-258-7181 PA",
+            ("Easton Suburban Water", "Utilities", "Water"),
+        ),
     ],
     ids=[
         "wegmans",
@@ -219,6 +369,41 @@ from lib.normalize import normalize_merchant, get_uncategorized
         "pirate_ship",
         "usps",
         "unknown_merchant",
+        # New pattern test IDs
+        "wine_and_spirits_store",
+        "36th_ave_wine",
+        "bourbon_street_wine",
+        "key_food",
+        "imperfect_foods",
+        "mccall_collective",
+        "bww_easton",
+        "takumi_sushi",
+        "3rd_ferry_fish_market",
+        "diner_248",
+        "owowcow",
+        "betterhelp",
+        "court_square_animal",
+        "walmart_hyphenated",
+        "walmart_supercenter",
+        "hobby_lobby",
+        "barnes_noble",
+        "american_eagle",
+        "tj_maxx_spaced",
+        "ebay",
+        "etsy",
+        "playstation_network",
+        "tcgplayer",
+        "steam",
+        "quickbooks_intuit",
+        "7_eleven",
+        "ezpass",
+        "mta_metrocard",
+        "newrez_shellpoint_not_shell",
+        "penndot",
+        "ny_dmv",
+        "european_wax_center",
+        "pure_barre",
+        "easton_suburban_water",
     ],
 )
 def test_normalize_merchant(raw: str, expected: tuple[str, str, str]) -> None:

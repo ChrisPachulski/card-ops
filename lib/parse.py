@@ -72,7 +72,7 @@ CARD_PARSERS: dict[str, tuple[str, str, str]] = {
     "amazon": ("chase-amazon", "chase_pdf", "*.pdf"),
     "freedom": ("chase-freedom", "chase_pdf", "*.pdf"),
     "wells_fargo": ("wf-active-cash", "wf_pdf", "*.pdf"),
-    "checkings": ("wf-checking", "wf_pdf", "*.pdf"),
+    "checkings": ("wf-checking", "wf_checking_pdf", "*.pdf"),
 }
 
 
@@ -423,6 +423,191 @@ def parse_wf_pdf(filepath: Path, card_id: str) -> pd.DataFrame:
 
 
 ###############################################################################
+# Chase Checking PDF Parser
+###############################################################################
+
+def _checking_extract_year(text: str, filepath: Path) -> int:
+    """
+    Extract the statement year from a Chase checking PDF.
+
+    Tries the date range header ('Month DD, YYYYthroughMonth DD, YYYY')
+    first, falls back to YYYYMMDD filename prefix.
+    """
+    # Try "through" date range header -- grab the end date year
+    match = re.search(
+        r"through\s*[A-Za-z]+\s+\d{1,2},?\s+(\d{4})",
+        text,
+    )
+    if match:
+        return int(match.group(1))
+
+    # Fallback: YYYYMMDD filename prefix
+    fname_match = re.search(r"^(\d{4})\d{4}", filepath.stem)
+    if fname_match:
+        return int(fname_match.group(1))
+
+    return pd.Timestamp.now().year
+
+
+# Patterns to skip -- these are not spending transactions
+_CHECKING_SKIP_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(p, re.IGNORECASE) for p in [
+        r"Online\s*Transfer\s*To\s*Sav",        # internal savings xfer
+        r"Transfer\s*From\s*(Chk|Sav)",          # internal account xfer
+        r"Wells\s*Fargo\s*Card\s*Ccpymt",        # CC payment
+        r"American\s*Express\s*ACH\s*Pmt",       # CC payment
+        r"Payment\s*To\s*Chase\s*Card",           # CC payment
+        r"Paypal\s*Acctverify",                   # PayPal verification
+        r"Remote\s*Online\s*Deposit",             # deposit
+        r"Real\s*Time\s*Transfer\s*Recd",         # incoming transfer
+        r"Payroll\s*PPD",                         # payroll deposit
+        r"^Deposit\b",                            # generic deposit
+        r"Check\s*OR\s*Supply\s*Order",           # check order fee
+    ]
+]
+
+
+def parse_wf_checking_pdf(filepath: Path, card_id: str) -> pd.DataFrame:
+    """
+    Parse a Chase checking account PDF statement.
+
+    Despite the card_id 'wf-checking', these are Chase Total Checking
+    statements. Extracts DEBIT transactions only (negative amounts),
+    skipping deposits, internal transfers, and credit card payments.
+
+    The transaction format is:
+        MM/DD Description Amount Balance
+    where debits are negative (prefixed with -).
+    """
+    import pdfplumber
+
+    text = ""
+    with pdfplumber.open(filepath) as pdf:
+        for page in pdf.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+
+    if not text.strip():
+        return _empty_df()
+
+    year = _checking_extract_year(text, filepath)
+
+    lines = text.split("\n")
+    in_transaction_section = False
+
+    # Matches: MM/DD Description -Amount Balance  OR  MM/DD MM/DD Description -Amount Balance
+    # The date-prefixed payment lines look like: "02/23 02/21 Payment To Chase Card..."
+    txn_pattern = re.compile(
+        r"^(\d{2}/\d{2})\s+"           # transaction date
+        r"(?:\d{2}/\d{2}\s+)?"         # optional second date (posting date)
+        r"(.+?)\s+"                     # description
+        r"(-?[\d,]+\.\d{2})\s+"        # amount
+        r"-?[\d,]+\.\d{2}\s*$"         # balance (ignored)
+    )
+
+    rows = []
+    for line in lines:
+        stripped = line.strip()
+
+        # Enter transaction section
+        if re.search(r"TRANSACTION\s+DETAIL", stripped, re.IGNORECASE):
+            in_transaction_section = True
+            continue
+
+        # Exit on post-transaction message or end marker
+        if re.search(
+            r"Ending\s+Balance|"
+            r"\*end\*transac|"
+            r"A\s+Monthly\s+Service\s+Fee",
+            stripped,
+            re.IGNORECASE,
+        ):
+            if in_transaction_section and "Ending Balance" in stripped:
+                in_transaction_section = False
+                continue
+
+        if not in_transaction_section:
+            continue
+
+        # Skip header/label lines
+        if stripped.startswith("DATE") or stripped.startswith("Beginning Balance"):
+            continue
+
+        match = txn_pattern.match(stripped)
+        if not match:
+            continue
+
+        date_str = match.group(1)
+        description = match.group(2).strip()
+        amount_str = match.group(3).replace(",", "")
+        amount = float(amount_str)
+
+        # Only keep debits (negative amounts = money going out)
+        if amount >= 0:
+            continue
+
+        # Check skip patterns (CC payments, internal transfers, deposits)
+        skip = False
+        for skip_re in _CHECKING_SKIP_PATTERNS:
+            if skip_re.search(description):
+                skip = True
+                break
+        if skip:
+            continue
+
+        # Convert to positive for consistency with credit card transactions
+        amount = abs(amount)
+
+        # Clean up the description to extract merchant name
+        # Remove common suffixes like PPD ID:, Web ID:, CCD ID:
+        merchant_raw = re.sub(
+            r"\s*(PPD|Web|CCD)\s*ID:\s*\S+",
+            "",
+            description,
+        ).strip()
+        # Remove trailing reference numbers
+        merchant_raw = re.sub(r"\s+\d{10,}$", "", merchant_raw).strip()
+
+        full_date_str = f"{date_str}/{year}"
+        # Handle year rollover: if statement covers Dec-Jan
+        txn_month = int(date_str.split("/")[0])
+        txn_year = year
+        # Check if the statement period spans a year boundary
+        closing_match = re.search(
+            r"through\s*([A-Za-z]+)\s+\d{1,2},?\s+\d{4}",
+            text,
+        )
+        if closing_match:
+            closing_month_name = closing_match.group(1).lower()
+            closing_month_map = {
+                "january": 1, "february": 2, "march": 3, "april": 4,
+                "may": 5, "june": 6, "july": 7, "august": 8,
+                "september": 9, "october": 10, "november": 11, "december": 12,
+            }
+            closing_month = closing_month_map.get(closing_month_name, 0)
+            if closing_month <= 2 and txn_month >= 11:
+                txn_year = year - 1
+
+        full_date_str = f"{date_str}/{txn_year}"
+        txn_date = pd.to_datetime(full_date_str, format="%m/%d/%Y")
+
+        rows.append(_build_row(
+            date=txn_date,
+            merchant_raw=merchant_raw,
+            amount=amount,
+            cardholder="chris",
+            card=card_id,
+            statement_file=filepath.name,
+        ))
+
+    if not rows:
+        return _empty_df()
+
+    return pd.DataFrame(rows)
+
+
+###############################################################################
 # Orchestration
 ###############################################################################
 
@@ -430,6 +615,7 @@ PARSER_DISPATCH: dict[str, callable] = {
     "amex_excel": lambda fp, card_id: parse_amex_excel(fp),
     "chase_pdf": parse_chase_pdf,
     "wf_pdf": parse_wf_pdf,
+    "wf_checking_pdf": parse_wf_checking_pdf,
 }
 
 
