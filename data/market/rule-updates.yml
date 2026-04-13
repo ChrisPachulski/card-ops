@@ -1,0 +1,42 @@
+updates:
+  - issuer: "US Bank"
+    rule: "Altitude Go dining cap"
+    change: "4% dining capped at $2,000/quarter as of April 2025"
+    fetched: "2026-04-12"
+    wiki_article: "issuer-rules.md"
+    wiki_still_accurate: false
+
+  - issuer: "Citi"
+    rule: "Costco Visa gas rate increase"
+    change: "5% at Costco gas stations (up from 4%) as of January 2025"
+    fetched: "2026-04-12"
+    wiki_article: "issuer-rules.md"
+    wiki_still_accurate: false
+
+  - issuer: "Chase"
+    rule: "Sapphire 48-month rule eliminated"
+    change: "Replaced with once-per-lifetime per product + proprietary pop-up system as of Jan 2026"
+    fetched: "2026-04-12"
+    wiki_article: "issuer-rules.md"
+    wiki_still_accurate: false
+
+  - issuer: "Capital One"
+    rule: "SavorOne renamed"
+    change: "No-AF card renamed to Savor (Oct 2024). New SavorOne is $39 AF for fair credit."
+    fetched: "2026-04-12"
+    wiki_article: "issuer-rules.md"
+    wiki_still_accurate: false
+
+  - issuer: "Wells Fargo"
+    rule: "5/24-style rule"
+    change: "WF adopted 5/24-style rule similar to Chase. Enforcement data points still accumulating."
+    fetched: "2026-04-12"
+    wiki_article: "issuer-rules.md"
+    wiki_still_accurate: false
+
+  - issuer: "Citi"
+    rule: "Costco Visa extended warranty removed"
+    change: "Extended warranty benefit discontinued January 22, 2023"
+    fetched: "2026-04-12"
+    wiki_article: "issuer-rules.md"
+    wiki_still_accurate: false

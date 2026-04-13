@@ -1,0 +1,197 @@
+cards:
+  citi-custom-cash:
+    signup_bonus: $200
+    msr: $1,500 in 6 months
+    annual_fee: 0
+    earn_rates:
+      top_category: 5% (up to $500/billing cycle)
+      other: 1%
+    eligible_categories:
+    - restaurants
+    - gas
+    - grocery
+    - drugstores
+    - home_improvement
+    - fitness
+    - live_entertainment
+    - travel
+    - transit
+    - streaming
+    notes: DoorDash codes as dining in practice (MCC 5812) despite terms excluding
+      delivery. One per person via direct application. Category auto-selects based
+      on highest spend.
+    sources:
+    - citi.com
+    - doctorofcredit.com
+    fetched: '2026-04-12'
+  citi-costco-anywhere:
+    signup_bonus: None
+    msr: N/A
+    annual_fee: 0
+    earn_rates:
+      costco_gas: 5%
+      other_gas: 4% (first $7K/yr)
+      dining_travel: 3%
+      costco: 2%
+      other: 1%
+    notes: 5% Costco gas added Jan 2025 (was 4%). Costco.com counts for 2%. No signup
+      bonus. Reward certificate redeemable at warehouse or ACH if >$300. No FTF. Extended
+      warranty discontinued Jan 2023.
+    sources:
+    - costco.com/credit-card
+    - nerdwallet.com
+    fetched: '2026-04-12'
+  chase-freedom-flex:
+    signup_bonus: $200
+    msr: $500 in 3 months
+    annual_fee: 0
+    earn_rates:
+      rotating_quarterly: 5% ($1,500/quarter)
+      chase_travel: 5%
+      dining: 3%
+      drugstore: 3%
+      other: 1%
+    notes: 'Cell phone protection ($800/claim, $50 deductible). Purchase protection
+      120 days. Extended warranty +1 year. Can hold alongside CFU. UR points pool
+      with CFU. 2026 Q1: Dining; Q2: Amazon/Whole Foods/Chase Travel.'
+    sources:
+    - chase.com
+    - bankrate.com
+    fetched: '2026-04-12'
+  capital-one-savor:
+    signup_bonus: $200
+    msr: $500 in 3 months
+    annual_fee: 0
+    earn_rates:
+      dining: 3%
+      entertainment: 3%
+      grocery: 3%
+      streaming: 3%
+      capital_one_entertainment: 8%
+      other: 1%
+    notes: Renamed from SavorOne in Oct 2024. New SavorOne ($39 AF) is for fair credit.
+      All rates uncapped. No FTF. Capital One pulls all 3 bureaus. Costco does NOT
+      count as grocery (MCC 5300 wholesale).
+    sources:
+    - capitalone.com
+    - doctorofcredit.com
+    fetched: '2026-04-12'
+  us-bank-altitude-go:
+    signup_bonus: $200 (20K points)
+    msr: $1,000 in 90 days
+    annual_fee: 0
+    earn_rates:
+      dining: 4% ($2K/quarter cap)
+      grocery: 2% uncapped
+      gas: 2% uncapped
+      streaming: 2% uncapped
+      other: 1%
+    notes: 'CRITICAL: 4% dining CAPPED at $2K/quarter as of April 2025. At $12K/yr
+      dining, effective rate is 2.97% -- CFU uncapped 3% actually beats it. Cell phone
+      protection $600/$25 deductible. 3% FTF added Sep 2024. Product change path to
+      Cash+ (5% in 2 chosen categories).'
+    sources:
+    - usbank.com
+    - nerdwallet.com
+    - frequentmiler.com
+    fetched: '2026-04-12'
+  bofa-customized-cash:
+    signup_bonus: $200
+    msr: $1,000 in 90 days
+    annual_fee: 0
+    earn_rates:
+      choice_category: 3% (5.25% with Platinum Honors)
+      grocery_wholesale: 2% (3.5% with PH)
+      other: 1% (1.75% with PH)
+    notes: 'Choice categories: gas, online shopping, dining, travel, drugstores, home
+      improvement. $2,500 COMBINED quarterly cap across choice + grocery. Preferred
+      Rewards Platinum Honors requires $100K at Merrill Edge. First-year bonus: 6%
+      on choice (base 3% + 3% first-year bonus). Can hold multiple cards (different
+      branded variants). 3% FTF.'
+    sources:
+    - bankofamerica.com
+    - nerdwallet.com
+    - mymoneyblog.com
+    fetched: '2026-04-12'
+  discover-it-cash-back:
+    signup_bonus: Cashback Match (doubles all year-1 cash back)
+    msr: None
+    annual_fee: 0
+    earn_rates:
+      rotating_quarterly: 5% ($1,500/quarter, activation required)
+      other: 1%
+    notes: Year-1 match effectively makes it 10% rotating / 2% base. No FTF. Cell
+      phone protection $600/$25. Costco does NOT accept Discover in-store (Visa only
+      through 2029). Discover pulls TransUnion in WA. Capital One/Discover merger
+      closed May 2025.
+    sources:
+    - discover.com
+    - bankrate.com
+    fetched: '2026-04-12'
+  wf-autograph:
+    signup_bonus: $200 (20K points)
+    msr: $1,000 in 3 months
+    annual_fee: 0
+    earn_rates:
+      dining: 3x
+      travel: 3x
+      gas: 3x
+      transit: 3x
+      streaming: 3x
+      phone: 3x
+      other: 1x
+    notes: Points worth 1 cpp as statement credit. Can hold alongside Active Cash.
+      Cell phone protection $600/$25. No FTF. 0% intro APR 12 months. Streaming excludes
+      SaaS/cloud (DigitalOcean, OpenAI NOT eligible). WF 6-month spacing rule between
+      cards.
+    sources:
+    - wellsfargo.com
+    - nerdwallet.com
+    - thepointsguy.com
+    fetched: '2026-04-12'
+  chase-ink-business-cash:
+    signup_bonus: $750
+    msr: $6,000 in 3 months
+    annual_fee: 0
+    earn_rates:
+      internet_cable_phone: 5% ($25K/yr cap)
+      office_supplies: 5% ($25K/yr cap)
+      gas_dining: 2%
+      other: 1%
+    notes: Business card -- does NOT count toward 5/24. Sole proprietorship qualifies
+      (MTG card sales). Internet/phone is guaranteed 5%. DigitalOcean/OpenAI MCC coding
+      UNVERIFIED (may or may not trigger 5%). Pirate Ship likely codes as shipping
+      (3x on Ink Preferred, not 5% here). 100K elevated SUB sometimes available on
+      Ink Preferred ($95 AF).
+    sources:
+    - chase.com
+    - thepointsguy.com
+    - onemileatatime.com
+    fetched: '2026-04-12'
+  chase-ink-business-unlimited:
+    signup_bonus: $750
+    msr: $6,000 in 3 months
+    annual_fee: 0
+    earn_rates:
+      everything: 1.5% (as UR points)
+    notes: Business card -- does NOT count toward 5/24. UR points redeemable at 1
+      cpp as statement credit. Pools with personal Chase UR cards.
+    sources:
+    - chase.com
+    fetched: '2026-04-12'
+  doordash-rewards-mastercard:
+    signup_bonus: Unknown
+    msr: Unknown
+    annual_fee: 0
+    earn_rates:
+      doordash: 4%
+      dining: 3%
+      grocery: 2%
+      other: 1%
+    notes: Issued by Chase. Free DashPass ($96/yr value) if $10K+ total annual card
+      spend. 10% off one convenience/grocery/alcohol/DashMart order per month. Chase-DoorDash
+      partnership extended through end of 2027.
+    sources:
+    - chase.com/doordash
+    - cnbc.com
+    fetched: '2026-04-12'
