@@ -41,6 +41,7 @@ reports/
 config/profile.yml
 config/profile.yaml
 config/profile.*.yml
+config/profile-*.yml
 !config/profile.example.yml
 
 # User mode overrides -- personal preferences, issuer notes
@@ -153,3 +154,18 @@ yarn-error.log*
 *.db
 *.sqlite
 *.sqlite3
+
+# -----------------------------------------------------------------------------
+# 9. PYTHON ARTIFACTS
+# -----------------------------------------------------------------------------
+__pycache__/
+*.pyc
+
+# -----------------------------------------------------------------------------
+# 10. DERIVED DATA (v2 architecture)
+#     Transaction parquet files and analysis outputs are generated locally.
+#     Config files (config/*.yml) and market cache (data/market/*.yml) are
+#     curated data and should NOT be gitignored.
+# -----------------------------------------------------------------------------
+data/transactions/*.parquet
+data/analysis/*.yml
