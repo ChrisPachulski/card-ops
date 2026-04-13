@@ -48,7 +48,7 @@ When evaluating a card offer, classify it into one or more of these types:
 
 ### Scoring Calibration & Statement Credits
 
-> **Wiki reference**: Read [[scoring-benchmarks]] (`wiki/card-ops/scoring-benchmarks.md`) for calibration benchmarks (10 reference card scores across 2 user profiles) and statement credit programs (Amex Offers, Chase Offers, credit stacks). Load this page when scoring Perks Fit or validating scoring output.
+> **Wiki reference**: Read [[scoring-benchmarks]] (`docs/scoring-benchmarks.md`) for calibration benchmarks (10 reference card scores across 2 user profiles) and statement credit programs (Amex Offers, Chase Offers, credit stacks). Load this page when scoring Perks Fit or validating scoring output.
 
 ## Evaluation Report Structure
 
@@ -92,27 +92,27 @@ Table with: card type, issuer, annual fee, signup bonus, MSR (minimum spend requ
 
 ## Risk & Timing Awareness
 
-> **Wiki reference**: Read [[application-timing]] (`wiki/card-ops/application-timing.md`) for bureau pull preferences, inquiry sensitivity rankings, application spacing rules, bust-out risk flags, utilization math, and life-event timing calendar. Load this page when assessing Block F (Application Plan).
+> **Wiki reference**: Read [[application-timing]] (`docs/application-timing.md`) for bureau pull preferences, inquiry sensitivity rankings, application spacing rules, bust-out risk flags, utilization math, and life-event timing calendar. Load this page when assessing Block F (Application Plan).
 
 ## Issuer Application Rules
 
-> **Wiki reference**: Read [[issuer-rules]] (`wiki/card-ops/issuer-rules.md`) for the complete rules database covering 7 issuers with 25+ specific rules. Load this page when assessing Block B (Eligibility Match). Covers: Chase 5/24 + Sapphire pop-up, Amex once-per-lifetime + 5-card limit, Citi 48-month + velocity, Capital One, Barclays, US Bank, BofA.
+> **Wiki reference**: Read [[issuer-rules]] (`docs/issuer-rules.md`) for the complete rules database covering 7 issuers with 25+ specific rules. Load this page when assessing Block B (Eligibility Match). Covers: Chase 5/24 + Sapphire pop-up, Amex once-per-lifetime + 5-card limit, Citi 48-month + velocity, Capital One, Barclays, US Bank, BofA.
 
 ## Points & Miles Valuations
 
-> **Wiki reference**: Read [[points-valuations]] (`wiki/card-ops/points-valuations.md`) for transferable currency valuations (6 programs), transfer partner valuations (12 programs), valuation methodology, 8 valuation rules, and devaluation risk tracking. Load this page when calculating bonus value (Block C) or ongoing value (Block D).
+> **Wiki reference**: Read [[points-valuations]] (`docs/points-valuations.md`) for transferable currency valuations (6 programs), transfer partner valuations (12 programs), valuation methodology, 8 valuation rules, and devaluation risk tracking. Load this page when calculating bonus value (Block C) or ongoing value (Block D).
 
 ## Portfolio Strategy
 
-> **Wiki reference**: Read [[portfolio-strategy]] (`wiki/card-ops/portfolio-strategy.md`) for ecosystem trifectas, AF stacking math, AAoA impact, and card count guidance. Read [[transfer-partners]] (`wiki/card-ops/transfer-partners.md`) for the 15-partner, 4-currency overlap matrix. Load these pages for Block E (Portfolio Optimization) and the optimize mode.
+> **Wiki reference**: Read [[portfolio-strategy]] (`docs/portfolio-strategy.md`) for ecosystem trifectas, AF stacking math, AAoA impact, and card count guidance. Read [[transfer-partners]] (`docs/transfer-partners.md`) for the 15-partner, 4-currency overlap matrix. Load these pages for Block E (Portfolio Optimization) and the optimize mode.
 
 ## MSR & Bonus Strategy
 
-> **Wiki reference**: Read [[bonus-strategy]] (`wiki/card-ops/bonus-strategy.md`) for MSR achievability framework (3 tiers), clawback risk by issuer, referral bonus overlay, retention offer strategy, and upgrade/downgrade paths. Load this page when writing Block C (Bonus Strategy) and when advising on card lifecycle decisions.
+> **Wiki reference**: Read [[bonus-strategy]] (`docs/bonus-strategy.md`) for MSR achievability framework (3 tiers), clawback risk by issuer, referral bonus overlay, retention offer strategy, and upgrade/downgrade paths. Load this page when writing Block C (Bonus Strategy) and when advising on card lifecycle decisions.
 
 ## Advanced Techniques
 
-> **Wiki reference**: Read [[advanced-techniques]] (`wiki/card-ops/advanced-techniques.md`) for expert-level strategies: credit freeze/bureau lock, AU strategy, NLL offers, in-branch pre-approvals, gardening. Mention these when relevant but do not build scoring around them.
+> **Wiki reference**: Read [[advanced-techniques]] (`docs/advanced-techniques.md`) for expert-level strategies: credit freeze/bureau lock, AU strategy, NLL offers, in-branch pre-approvals, gardening. Mention these when relevant but do not build scoring around them.
 
 ## Global Rules
 

@@ -33,7 +33,7 @@ User wants to compare 2+ card offers side by side.
 
 ### 3. Head-to-Head Analysis
 For each pair, identify:
-- Which wins on first-year value (bonus + rewards - fee)? Use `wiki/card-ops/points-valuations.md` for point conversions.
+- Which wins on first-year value (bonus + rewards - fee)? Use `docs/points-valuations.md` for point conversions.
 - Which wins on ongoing value (year 2+ rewards - fee)?
 - Which has better approval odds?
 - Which fits the portfolio better?
@@ -46,7 +46,7 @@ For each pair, identify:
 - If neither fits well: say so and suggest what to look for instead
 
 ### 5. Application Sequencing
-If user wants multiple cards, use `wiki/card-ops/issuer-rules.md` and `wiki/card-ops/portfolio-strategy.md`:
+If user wants multiple cards, use `docs/issuer-rules.md` and `docs/portfolio-strategy.md`:
 - Order by issuer sensitivity: Chase first (5/24), then US Bank/Barclays (inquiry-sensitive), then Amex/Citi/others
 - Respect velocity limits: Chase 2/30, Amex 2/90, Citi 1/8 + 2/65, BofA 2/3/4
 - Space applications 30-90 days apart (minimum)

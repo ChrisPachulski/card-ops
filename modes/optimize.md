@@ -40,15 +40,15 @@ For each card with an annual fee:
 - When is the fee anniversary? (to plan downgrades before renewal)
 
 ### 5. Ecosystem & Transfer Partner Analysis
-Using `wiki/card-ops/portfolio-strategy.md`:
+Using `docs/portfolio-strategy.md`:
 - Check current cards against the Ecosystem Trifectas table -- is the user in one ecosystem? Partially?
-- Check `wiki/card-ops/transfer-partners.md` -- which exclusive partners does the user currently access?
+- Check `docs/transfer-partners.md` -- which exclusive partners does the user currently access?
 - Identify if user is 1 card away from completing a trifecta
 - If user has cards across multiple ecosystems: flag potential for points fragmentation (small balances in multiple programs are harder to redeem at high value)
 - Recommend primary ecosystem based on spending pattern and transfer partner preference
 
 ### 6. Annual Fee Audit (Enhanced)
-Using `wiki/card-ops/portfolio-strategy.md#Annual Fee Stacking Math`:
+Using `docs/portfolio-strategy.md#Annual Fee Stacking Math`:
 - For each fee card: calculate `Net_Value = Annual_Rewards + Perk_Value_Used + Retention_Offer - Annual_Fee`
 - Only count perks the user ACTUALLY redeems (not theoretical value)
 - Flag cards where `Net_Value < 0` as downgrade/cancel candidates
@@ -67,6 +67,6 @@ Using `wiki/card-ops/portfolio-strategy.md#Annual Fee Stacking Math`:
 Output a prioritized action plan:
 1. **Keep and optimize**: Cards earning their slot, optimal spending assignment
 2. **Apply for**: Gap-filling cards, ranked by value add. Note which trifecta they complete.
-3. **Downgrade**: Fee cards not earning their keep (call retention first -- see `wiki/card-ops/bonus-strategy.md#Retention Offer Strategy`)
+3. **Downgrade**: Fee cards not earning their keep (call retention first -- see `docs/bonus-strategy.md#Retention Offer Strategy`)
 4. **Close**: Cards with no value and no downgrade path (watch AAoA impact)
 5. **Timing**: Sequence applications per issuer rules (Chase first due to 5/24, then others). Space 30-90 days apart. Note combined inquiry impact on AAoA and score.

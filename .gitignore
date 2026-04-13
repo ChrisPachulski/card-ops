@@ -72,6 +72,16 @@ batch/logs/
 # (none currently -- tracker-additions TSVs are user data)
 
 # -----------------------------------------------------------------------------
+# 3b. PERSONAL ANALYSIS SCRIPTS
+#     User-created scripts that parse personal transactions, reference
+#     specific cards, or contain spending amounts. System scripts are
+#     in the root as *.mjs -- personal analysis goes here.
+# -----------------------------------------------------------------------------
+*_analysis.py
+*_analysis.r
+*_analysis.R
+
+# -----------------------------------------------------------------------------
 # 4. ITERATION / LOOP ARTIFACTS
 #    Research loop logs are large and session-specific, not part of the system.
 # -----------------------------------------------------------------------------
