@@ -1,0 +1,52 @@
+location:
+  current: "Covington, WA"
+  state: "WA"
+  moved_from: "Palmer Township, PA"
+  move_date: "2026-01-01"
+
+income:
+  household_gross: 257500
+
+memberships:
+  - "Costco (warehouse, no Citi card)"
+  - "Amazon Prime"
+  - "Audible"
+  - "DashPass"
+
+side_business:
+  exists: true
+  type: "sole_proprietorship"
+  description: "MTG card sales via TCGPlayer"
+  qualifies_for_business_cards: true
+
+strategy:
+  primary_goal: "cash_back"
+  anti_goals: ["travel_points"]
+
+wallet_routing:
+  groceries_primary: "amex-bcp"
+  groceries_overflow: "wf-active-cash"
+  dining: "chase-freedom"
+  doordash: "chase-freedom"
+  amazon: "chase-amazon"
+  gas: "amex-bcp"
+  streaming: "amex-bcp"
+  costco: "wf-active-cash"
+  everything_else: "wf-active-cash"
+
+life_events:
+  - date: "2026-01-01"
+    type: "relocation"
+    detail: "PA to WA"
+    impact: "grocery stores changed, no state income tax, new utility providers"
+  - date: "2026-01-01"
+    type: "new_expense"
+    detail: "KinderCare daycare $1,450/mo"
+  - date: "2026-01-01"
+    type: "asset_event"
+    detail: "PA home sold, $127,890 net proceeds"
+
+analysis:
+  last_full_analysis: null
+  last_parse: null
+  pending_flags: []

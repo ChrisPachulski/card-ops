@@ -81,13 +81,30 @@ AI-powered credit card optimization built on Claude Code: statement parsing, off
 > "I need a few details to personalize evaluations:
 > - Your estimated credit score range (e.g., 740-760)
 > - Approximate annual income
-> - Current cards you hold (issuer + product name)
-> - Your top 3 monthly spending categories and rough amounts
+> - Current cards you hold (just names -- e.g., 'BCP, Active Cash, CFU')
 > - Primary reward goal: cash back, travel points, or category perks?
 >
 > I'll set everything up for you."
 
-Fill `config/profile.yml` from their answers.
+**CRITICAL: Earn rates come from `data/known-cards.yml`, NEVER from the user, NEVER from memory, NEVER from training data.**
+
+For each card the user names:
+1. Call `lib/card_lookup.py::lookup_card(name)` -- if found, use those rates verbatim.
+2. If NOT found: web-search the issuer's product page, verify rates, call
+   `lib/card_lookup.py::add_card(...)` to persist the new card. It's now in the
+   cache for all future sessions and users. THEN use the looked-up rates.
+
+The known-cards.yml file is generated from wiki articles. Do not edit it directly.
+
+### Market Scan
+
+The card database must cover the full market. On first setup (or if `wiki/card-ops/cards/` has <50 articles), run a full market scan: parallel agents per issuer, web-search product pages, create wiki articles, then `python lib/generate_known_cards.py`. See SKILL.md for the full procedure.
+
+### Staleness Check
+
+On every invocation, check the most recent `updated` date in `wiki/card-ops/cards/`. If >30 days old, prompt the user to re-scan.
+
+Fill `config/profile-{name}.yml` from their answers + looked-up rates.
 
 #### Step 2: Statement Upload (recommended)
 > "For the most accurate analysis, drop your recent statement PDFs into the `statements/` folder. I'll parse your actual spending to calibrate recommendations. No data leaves your machine."

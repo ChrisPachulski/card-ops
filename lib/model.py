@@ -38,11 +38,13 @@ class ScenarioResult(TypedDict):
 # Maps spending categories to the rate key used in CardSpec.earn_rates
 _CATEGORY_TO_RATE_KEY: dict[str, str] = {
     "Groceries": "groceries",
+    "Whole Foods": "whole_foods",
     "Dining": "dining",
     "Delivery": "dining",
     "Amazon": "amazon",
     "Gas": "gas",
     "Streaming": "streaming",
+    "Transit": "transit",
 }
 
 
