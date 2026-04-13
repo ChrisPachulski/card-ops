@@ -1,55 +1,57 @@
-# Mode: Parse Statements
+# Mode: Scan (Statement Ingestion)
 
 ## Trigger
-User drops statement PDFs into `statements/` or asks to analyze spending.
+User drops statement PDFs/Excel into `statements/` or asks to parse/analyze spending.
 
 ## Inputs
-- PDF statements in `statements/`
-- `config/profile.yml` (to update with parsed data)
+- New statement files in `statements/{issuer}/`
+- Existing parquets in `data/transactions/`
 
 ## Execution Steps
 
-### 1. Detect Statements
-- Read `statements/` directory for new PDF files
-- Identify issuer from statement format (header, logo, layout)
-- Extract statement period (start/end dates)
+### 1. Parse New Statements
+Run `parse_new_statements()` from `lib/parse.py`. This detects which statement files are new (not yet in parquets), parses them, and appends to the appropriate parquet.
 
-### 2. Parse Transactions
-For each statement, extract:
-- Transaction date
-- Merchant name
-- Amount
-- Category (from merchant or statement categorization)
+```python
+from lib.parse import parse_new_statements
+results = parse_new_statements()
+```
 
-### 3. Categorize Spending
-Map transactions to standard categories:
-- Groceries (grocery stores, supermarkets)
-- Dining (restaurants, fast food, coffee shops)
-- Travel (airlines, hotels, car rental, rideshare)
-- Gas (gas stations)
-- Online shopping (Amazon, online retailers)
-- Subscriptions (streaming, software, memberships)
-- Utilities (electric, water, internet, phone)
-- Other (everything else)
+Report: "{N} new transactions parsed for {card}" for each card with new data. If no new statements found, report that and stop.
 
-### 4. Calculate Aggregates
-- Monthly total by category
-- Average across statement periods
-- Identify top 5 merchants by spend
-- Flag seasonal patterns (e.g., holiday spending spikes)
+### 2. Build Spending Profile
+Run `build_spending_profile()` from `lib/spending.py` to rebuild the household spending summary.
 
-### 5. Compare to Profile
-- Show profile estimates vs actual spend
-- Highlight categories where actual differs significantly from estimate
-- Suggest profile updates
+```python
+from lib.spending import build_spending_profile, print_spending_summary
+profile = build_spending_profile(months=12)
+print_spending_summary(profile)
+```
 
-### 6. Opportunity Analysis
-- For each category: what's the best earn rate available?
-- Compare to current card earn rates
-- Calculate potential annual rewards gap (what you earn now vs what you could earn)
-- Flag categories with no optimized card coverage
+### 3. Detect Subscriptions
+Run `detect_subscriptions()` from `lib/subscriptions.py` to identify recurring charges.
 
-### 7. Output
-- Print spending summary to console
-- Offer to update `config/profile.yml` with actual spending data
-- Store parsed data for future evaluations
+```python
+from lib.subscriptions import detect_subscriptions
+subs = detect_subscriptions(months=6)
+```
+
+Report top subscriptions by monthly cost, flag any that seem duplicative or wasteful.
+
+### 4. Detect Changes
+Run `detect_changes()` from `lib/trends.py` to compare recent spending to baseline.
+
+```python
+from lib.trends import detect_changes
+changes = detect_changes()
+```
+
+Report all flags with severity and recommendation.
+
+### 5. Output
+- Print spending summary (categories, cards, top merchants)
+- Print subscription audit highlights
+- Print change flags
+- If `requires_full_reanalysis` is true: "Spending patterns have shifted significantly. Run optimize for a full portfolio review."
+
+Scan is purely about ingesting data and detecting changes. No card recommendations -- that is optimize's job.

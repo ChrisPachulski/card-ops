@@ -12,6 +12,7 @@ User provides a card offer (URL, screenshot, or pasted details).
 ## Execution Steps
 
 ### 1. Extract Offer Details
+- Check `data/market/current-offers.yml` via `lib/market.py` for cached data. If stale or missing, run targeted web search and update cache.
 - If URL: fetch the page and extract card terms
 - If text: parse the offer details
 - Identify: issuer, card name, annual fee, signup bonus, MSR, earn rates, key perks
@@ -30,7 +31,7 @@ Build the summary table. Include:
 - Notable perks (lounge access, credits, insurance)
 
 ### 4. Block B: Eligibility Match
-- Read user's credit score from `config/profile.yml`
+- Read user's credit score from `config/profile-chris.yml` and `config/profile-dana.yml`
 - Check ALL applicable issuer-specific rules from `docs/issuer-rules.md`:
   - **Chase:** 5/24 count (from profile `chase_524_status` + `current_cards` opened dates), 2/30 velocity, Sapphire pop-up eligibility, credit reallocation opportunity
   - **Amex:** Once-per-lifetime check (`amex_once_per_lifetime` list), 5-credit-card limit check, 2/90 velocity, pop-up jail risk assessment
@@ -64,7 +65,8 @@ Build the summary table. Include:
 - **Devaluation risk**: Note if points are in a program with active/upcoming devaluations (see `docs/points-valuations.md#Devaluation Risk Awareness`)
 
 ### 6. Block D: Value Analysis
-- Map each spending category from `config/profile.yml` to card earn rates
+- Load spending data from parquets via `lib/parse.load_all_transactions()` or `data/analysis/spending-profile.yml` for actual spending by category. Do not rely on profile estimates alone.
+- Map each spending category to card earn rates
 - Calculate monthly and annual projected rewards using `docs/points-valuations.md`:
   - Multiply points earned per category by the appropriate cpp from `docs/points-valuations.md`
   - Always show rewards in BOTH points and dollar-equivalent
@@ -76,6 +78,7 @@ Build the summary table. Include:
 - **Calibration check**: Compare your score against `docs/scoring-benchmarks.md` for a similar user profile. If significantly divergent, re-examine dimension scores.
 
 ### 7. Block E: Portfolio Optimization
+- Use `lib/model.model_scenario()` to compare the portfolio with and without this card using actual spending data.
 - Check `current_cards` in profile for overlap
 - Identify which slot this card fills (daily driver, category specialist, perks card)
 - Check ecosystem fit (e.g., Chase trifecta: CSR + CFF + CFU)

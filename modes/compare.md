@@ -5,8 +5,10 @@ User wants to compare 2+ card offers side by side.
 
 ## Inputs
 - Card offers (URLs, names, or report numbers from tracker)
-- `config/profile.yml` (financial profile)
+- `config/profile-chris.yml`, `config/profile-dana.yml` (financial profiles)
+- `config/household.yml` (shared spending, wallet routing)
 - Existing reports in `reports/` (if previously evaluated)
+- Parquets in `data/transactions/` (actual spending data)
 
 ## Execution Steps
 
@@ -32,6 +34,8 @@ User wants to compare 2+ card offers side by side.
 | Score | X.X/5 | X.X/5 | X.X/5 |
 
 ### 3. Head-to-Head Analysis
+Use `lib/model.compare_scenarios()` with actual spending data from parquets for side-by-side value comparison.
+
 For each pair, identify:
 - Which wins on first-year value (bonus + rewards - fee)? Use `docs/points-valuations.md` for point conversions.
 - Which wins on ongoing value (year 2+ rewards - fee)?

@@ -8,6 +8,7 @@ User asks about card status, pipeline overview, or "what have I evaluated?"
 ### 1. Read Tracker
 - Load `data/cards.md`
 - Parse all entries
+- Read application history from `config/profile-chris.yml` and `config/profile-dana.yml`
 
 ### 2. Summary Metrics
 Show:
@@ -21,6 +22,7 @@ Show:
 - Check `data/pipeline.md` for pending offers
 - Check `batch/tracker-additions/` for unmerged TSVs
 - If unmerged: offer to run `node merge-tracker.mjs`
+- Check `data/analysis/change-flags.yml` for pending flags and display summary
 
 ### 4. Recent Activity
 - Show last 5 entries by date
@@ -29,5 +31,6 @@ Show:
 
 ### 5. Upcoming Actions
 - Annual fee renewal dates for Active cards (if tracked in notes)
+- Calculate upcoming AF renewal dates from card open dates in profiles
 - Cards approaching 1-year mark (downgrade decision window)
 - MSR deadlines for recently approved cards

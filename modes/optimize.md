@@ -1,72 +1,69 @@
 # Mode: Portfolio Optimization
 
 ## Trigger
-User asks to optimize their card portfolio, or after enough evaluations to have context.
+User asks to optimize their card portfolio, audit their rewards, find gaps, or after scan detects significant changes.
 
 ## Inputs
-- `config/profile.yml` (current cards + spending)
-- `data/cards.md` (evaluated offers)
-- Parsed statement data (if available)
+- Parquets in `data/transactions/`
+- `config/profile-chris.yml`, `config/profile-dana.yml`
+- `config/household.yml`
+- `data/market/current-offers.yml`, `data/market/rule-updates.yml`
+- Wiki docs in `docs/`
 
 ## Execution Steps
 
-### 1. Current Portfolio Audit
-For each card in `current_cards`:
-- Calculate annual rewards based on current spending assignment
-- Calculate perk value (what perks does the user actually redeem?)
-- Calculate net value (rewards + perks - annual fee)
-- Flag underperforming cards (net value < $0)
+### 1. Check Data Freshness
+If new statement files exist in `statements/` that are not yet parsed, prompt: "New statements detected. Run scan first to update the spending database."
 
-### 2. Spending Assignment Optimization
-- For each spending category, identify which held card earns the most
-- Build optimal spending assignment matrix:
+### 2. Current Spending Profile
+Load or rebuild the spending profile:
 
-| Category | Monthly Spend | Best Card | Earn Rate | Monthly Rewards |
-|----------|---------------|-----------|-----------|-----------------|
-| Groceries | $600 | Amex Gold | 4x MR | 2,400 MR |
-| Dining | $400 | CSR | 3x UR | 1,200 UR |
-| ... | | | | |
+```python
+from lib.spending import build_spending_profile, print_spending_summary
+profile = build_spending_profile(months=12)
+print_spending_summary(profile)
+```
 
-### 3. Gap Analysis
-- Identify categories earning only 1x (no bonus)
-- Calculate annual rewards lost to 1x earn
-- Suggest cards that would fill each gap
-- Prioritize by gap size (largest $ value first)
+### 3. Current Rewards + Routing Leaks
+Calculate what the current portfolio earns and where money is leaking:
 
-### 4. Fee Audit
-For each card with an annual fee:
-- Does the user fully offset the fee with rewards + perks?
-- Is there a no-fee downgrade path?
-- When is the fee anniversary? (to plan downgrades before renewal)
+```python
+from lib.rewards import calculate_rewards
+rewards = calculate_rewards(months=12)
+```
 
-### 5. Ecosystem & Transfer Partner Analysis
-Using `docs/portfolio-strategy.md`:
-- Check current cards against the Ecosystem Trifectas table -- is the user in one ecosystem? Partially?
-- Check `docs/transfer-partners.md` -- which exclusive partners does the user currently access?
-- Identify if user is 1 card away from completing a trifecta
-- If user has cards across multiple ecosystems: flag potential for points fragmentation (small balances in multiple programs are harder to redeem at high value)
-- Recommend primary ecosystem based on spending pattern and transfer partner preference
+Print: current rewards, effective rate, optimal rate, and the leak table (category, current card/rate, best card/rate, annual leak amount).
 
-### 6. Annual Fee Audit (Enhanced)
-Using `docs/portfolio-strategy.md#Annual Fee Stacking Math`:
-- For each fee card: calculate `Net_Value = Annual_Rewards + Perk_Value_Used + Retention_Offer - Annual_Fee`
-- Only count perks the user ACTUALLY redeems (not theoretical value)
-- Flag cards where `Net_Value < 0` as downgrade/cancel candidates
-- Check AF refund windows and alert if approaching deadline
-- Total portfolio AF: sum all annual fees. Compare to total portfolio value.
-- Show total net portfolio value (rewards + perks - all fees)
+### 4. Portfolio Scenario Modeling
+Run scenarios using the portfolio modeler:
 
-### 7. AAoA & Credit Health Check
-- Calculate current AAoA from `current_cards` opened dates
-- Model impact of recommended new cards on AAoA
-- Flag if closing any card would remove the oldest account
-- Recommend downgrade over close when possible (preserves account age)
-- Check utilization impact of adding/removing credit lines
+```python
+from lib.model import model_scenario, compare_scenarios, _load_current_cards
 
-### 8. Recommendation
-Output a prioritized action plan:
-1. **Keep and optimize**: Cards earning their slot, optimal spending assignment
-2. **Apply for**: Gap-filling cards, ranked by value add. Note which trifecta they complete.
-3. **Downgrade**: Fee cards not earning their keep (call retention first -- see `docs/bonus-strategy.md#Retention Offer Strategy`)
-4. **Close**: Cards with no value and no downgrade path (watch AAoA impact)
-5. **Timing**: Sequence applications per issuer rules (Chase first due to 5/24, then others). Space 30-90 days apart. Note combined inquiry impact on AAoA and score.
+current_cards = _load_current_cards()
+# Build spending dict from profile categories
+# Run: current optimized, +1 best card, +2 best cards, +3 best cards
+```
+
+For candidate cards, check `data/market/current-offers.yml`. If stale (>30 days), run targeted web searches for the top candidates and update the cache via `lib/market.py`.
+
+### 5. Eligibility Check
+Read both `profile-chris.yml` and `profile-dana.yml` for:
+- 5/24 status
+- Inquiry counts by bureau
+- Issuer-specific status (Amex lifetime bonuses, Citi cards held, etc.)
+
+Cross-reference with `docs/issuer-rules.md` and `data/market/rule-updates.yml`.
+
+### 6. Business Card Consideration
+If `household.yml` has `side_business.exists: true`, include business card scenarios (Chase Ink Cash, Ink Unlimited, etc.) in the modeling. Note that business cards typically do not count toward 5/24.
+
+### 7. Output
+Produce a ranked recommendation with:
+1. **Routing fixes** (free, no new cards): which categories to move to which card, annual savings
+2. **New card recommendations** ranked by incremental annual value, with signup bonus value
+3. **Application sequence** considering issuer velocity rules and bureau management
+4. **Dollar math** for every recommendation (current vs proposed, annual delta)
+
+### 8. Clear Change Flags
+After completing the review, clear `data/analysis/change-flags.yml` by setting `requires_full_reanalysis: false`.
