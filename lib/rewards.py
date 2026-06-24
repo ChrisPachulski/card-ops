@@ -262,8 +262,6 @@ def _handle_grocery_rewards(
         period_spend = float(group["amount"].sum())
         grocery_by_card[card] = round(period_spend * annualize, 0)
 
-    total_grocery = sum(grocery_by_card.values())
-
     # Record by_category entries with cap-aware actual rates
     for card, annual_spend in grocery_by_card.items():
         card_rates = all_card_rates.get(card, {})

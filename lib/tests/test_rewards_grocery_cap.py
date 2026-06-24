@@ -26,7 +26,6 @@ from lib.rewards import (
     _find_grocery_cap,
     _handle_grocery_rewards,
     _optimal_grocery_rewards,
-    _rate_for_card_category,
 )
 
 
@@ -400,7 +399,7 @@ class TestHandleGroceryRewards:
 
         # Cap remaining: $6000 - $5000 = $1000
         # Total grocery leaks should consume exactly $1000 of cap room
-        total_leaked_spend = sum(l["annual_spend"] for l in leaks)
+        total_leaked_spend = sum(leak["annual_spend"] for leak in leaks)
         assert total_leaked_spend == pytest.approx(1000, abs=1)
 
     def test_tiny_grocery_no_leak_below_threshold(self, household_rates):
@@ -473,8 +472,8 @@ class TestOldBugWouldHaveFailed:
         #   annual_leak = $8000 * (6% - 2%) = $320
         # NEW CODE correctly generates NO leak
         grocery_leaks_on_wf = [
-            l for l in leaks
-            if l["current_card"] == "wf-active-cash"
+            leak for leak in leaks
+            if leak["current_card"] == "wf-active-cash"
         ]
         assert len(grocery_leaks_on_wf) == 0
 

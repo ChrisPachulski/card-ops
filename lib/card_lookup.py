@@ -7,6 +7,7 @@ annual fee, and notes without asking the user to type in numbers they don't know
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TypedDict
 
 import yaml
 
@@ -22,8 +23,6 @@ KNOWN_CARDS_PATH = CARD_OPS_ROOT / "data" / "known-cards.yml"
 ###############################################################################
 # Types
 ###############################################################################
-
-from typing import TypedDict
 
 
 class KnownCard(TypedDict):
