@@ -13,65 +13,29 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, renameSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join } from 'path';
 import { execFileSync } from 'child_process';
+import {
+  readCards, parseScore, normalizeIssuer, cardMatch, CANONICAL_STATES,
+  CARD_OPS, CARDS_FILE, ADDITIONS_DIR,
+} from './tracker.mjs';
 
-const CARD_OPS = dirname(fileURLToPath(import.meta.url));
-const CARDS_FILE = join(CARD_OPS, 'data/cards.md');
-const ADDITIONS_DIR = join(CARD_OPS, 'batch/tracker-additions');
 const MERGED_DIR = join(ADDITIONS_DIR, 'merged');
 const DRY_RUN = process.argv.includes('--dry-run');
 const VERIFY = process.argv.includes('--verify');
 
-const CANONICAL_STATES = [
-  'Evaluated', 'Applied', 'Approved', 'Rejected',
-  'Pended', 'Declined', 'Active', 'Closed', 'SKIP',
-];
-
 function validateStatus(status) {
-  const clean = status.replace(/\*\*/g, '').trim();
-  const lower = clean.toLowerCase();
-
+  const lower = status.replace(/\*\*/g, '').trim().toLowerCase();
   for (const valid of CANONICAL_STATES) {
     if (valid.toLowerCase() === lower) return valid;
   }
-
   console.warn(`  Non-canonical status "${status}" -> defaulting to "Evaluated"`);
   return 'Evaluated';
-}
-
-function normalizeIssuer(name) {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, '');
-}
-
-function cardFuzzyMatch(a, b) {
-  const wordsA = a.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-  const wordsB = b.toLowerCase().split(/\s+/).filter(w => w.length > 3);
-  const overlap = wordsA.filter(w => wordsB.some(wb => wb.includes(w) || w.includes(wb)));
-  return overlap.length >= 1;
 }
 
 function extractReportNum(reportStr) {
   const m = reportStr.match(/\[(\d+)\]/);
   return m ? parseInt(m[1]) : null;
-}
-
-function parseScore(s) {
-  const m = s.replace(/\*\*/g, '').match(/([\d.]+)/);
-  return m ? parseFloat(m[1]) : 0;
-}
-
-function parseCardLine(line) {
-  const parts = line.split('|').map(s => s.trim());
-  if (parts.length < 10) return null;
-  const num = parseInt(parts[1]);
-  if (isNaN(num) || num === 0) return null;
-  return {
-    num, date: parts[2], issuer: parts[3], card: parts[4],
-    score: parts[5], status: parts[6], annual_fee: parts[7],
-    report: parts[8], notes: parts[9] || '', raw: line,
-  };
 }
 
 function parseTsvContent(content, filename) {
@@ -81,7 +45,7 @@ function parseTsvContent(content, filename) {
   let parts;
 
   if (content.startsWith('|')) {
-    parts = content.split('|').map(s => s.trim()).filter(Boolean);
+    parts = content.split('|').map((s) => s.trim()).filter(Boolean);
     if (parts.length < 8) {
       console.warn(`  Skipping malformed pipe-delimited ${filename}: ${parts.length} fields`);
       return null;
@@ -116,24 +80,13 @@ function parseTsvContent(content, filename) {
 
 // ---- Main ----
 
-if (!existsSync(CARDS_FILE)) {
+const data = readCards();
+if (!data) {
   console.log('No cards.md found. Nothing to merge into.');
   process.exit(0);
 }
-const cardContent = readFileSync(CARDS_FILE, 'utf-8');
-const cardLines = cardContent.split('\n');
-const existingCards = [];
-let maxNum = 0;
-
-for (const line of cardLines) {
-  if (line.startsWith('|') && !line.includes('---') && !line.includes('Issuer')) {
-    const card = parseCardLine(line);
-    if (card) {
-      existingCards.push(card);
-      if (card.num > maxNum) maxNum = card.num;
-    }
-  }
-}
+const { lines: cardLines, entries: existingCards } = data;
+let maxNum = existingCards.reduce((m, c) => Math.max(m, c.num), 0);
 
 console.log(`Existing: ${existingCards.length} entries, max #${maxNum}`);
 
@@ -142,7 +95,7 @@ if (!existsSync(ADDITIONS_DIR)) {
   process.exit(0);
 }
 
-const tsvFiles = readdirSync(ADDITIONS_DIR).filter(f => f.endsWith('.tsv'));
+const tsvFiles = readdirSync(ADDITIONS_DIR).filter((f) => f.endsWith('.tsv'));
 if (tsvFiles.length === 0) {
   console.log('No pending additions to merge.');
   process.exit(0);
@@ -170,22 +123,17 @@ for (const file of tsvFiles) {
   let duplicate = null;
 
   if (reportNum) {
-    duplicate = existingCards.find(c => {
-      const existingReportNum = extractReportNum(c.report);
-      return existingReportNum === reportNum;
-    });
+    duplicate = existingCards.find((c) => extractReportNum(c.report) === reportNum);
   }
 
   if (!duplicate) {
-    duplicate = existingCards.find(c => c.num === addition.num);
+    duplicate = existingCards.find((c) => c.num === addition.num);
   }
 
   if (!duplicate) {
     const normIssuer = normalizeIssuer(addition.issuer);
-    duplicate = existingCards.find(c => {
-      if (normalizeIssuer(c.issuer) !== normIssuer) return false;
-      return cardFuzzyMatch(addition.card, c.card);
-    });
+    duplicate = existingCards.find((c) =>
+      normalizeIssuer(c.issuer) === normIssuer && cardMatch(addition.card, c.card));
   }
 
   if (duplicate) {
@@ -194,10 +142,8 @@ for (const file of tsvFiles) {
 
     if (newScore > oldScore) {
       console.log(`Update: #${duplicate.num} ${addition.issuer} ${addition.card} (${oldScore}->${newScore})`);
-      const lineIdx = cardLines.indexOf(duplicate.raw);
-      if (lineIdx >= 0) {
-        const updatedLine = `| ${duplicate.num} | ${addition.date} | ${addition.issuer} | ${addition.card} | ${addition.score} | ${duplicate.status} | ${addition.annual_fee} | ${addition.report} | Re-eval ${addition.date} (${oldScore}->${newScore}). ${addition.notes} |`;
-        cardLines[lineIdx] = updatedLine;
+      if (duplicate.lineIdx >= 0) {
+        cardLines[duplicate.lineIdx] = `| ${duplicate.num} | ${addition.date} | ${addition.issuer} | ${addition.card} | ${addition.score} | ${duplicate.status} | ${addition.annual_fee} | ${addition.report} | Re-eval ${addition.date} (${oldScore}->${newScore}). ${addition.notes} |`;
         updated++;
       }
     } else {
@@ -208,8 +154,7 @@ for (const file of tsvFiles) {
     const entryNum = addition.num > maxNum ? addition.num : ++maxNum;
     if (addition.num > maxNum) maxNum = addition.num;
 
-    const newLine = `| ${entryNum} | ${addition.date} | ${addition.issuer} | ${addition.card} | ${addition.score} | ${addition.status} | ${addition.annual_fee} | ${addition.report} | ${addition.notes} |`;
-    newLines.push(newLine);
+    newLines.push(`| ${entryNum} | ${addition.date} | ${addition.issuer} | ${addition.card} | ${addition.score} | ${addition.status} | ${addition.annual_fee} | ${addition.report} | ${addition.notes} |`);
     added++;
     console.log(`Add #${entryNum}: ${addition.issuer} ${addition.card} (${addition.score})`);
   }

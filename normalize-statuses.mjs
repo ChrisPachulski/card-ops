@@ -8,23 +8,15 @@
  * Run: node card-ops/normalize-statuses.mjs [--dry-run]
  */
 
-import { readFileSync, writeFileSync, copyFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { readCards, writeCards, serializeRow, stripBold, CANONICAL_STATES } from './tracker.mjs';
 
-const CARD_OPS = dirname(fileURLToPath(import.meta.url));
-const CARDS_FILE = join(CARD_OPS, 'data/cards.md');
 const DRY_RUN = process.argv.includes('--dry-run');
 
 function normalizeStatus(raw) {
-  let s = raw.replace(/\*\*/g, '').trim();
+  const s = stripBold(raw).trim();
   const lower = s.toLowerCase();
 
-  const canonical = [
-    'Evaluated', 'Applied', 'Approved', 'Rejected',
-    'Pended', 'Declined', 'Active', 'Closed', 'SKIP',
-  ];
-  for (const c of canonical) {
+  for (const c of CANONICAL_STATES) {
     if (lower === c.toLowerCase()) return { status: c };
   }
 
@@ -53,12 +45,12 @@ function normalizeStatus(raw) {
   return { status: null, unknown: true };
 }
 
-if (!existsSync(CARDS_FILE)) {
+const data = readCards();
+if (!data) {
   console.log('No cards.md found. Nothing to normalize.');
   process.exit(0);
 }
-const content = readFileSync(CARDS_FILE, 'utf-8');
-const lines = content.split('\n');
+const { lines } = data;
 
 let changes = 0;
 let unknowns = [];
@@ -67,7 +59,7 @@ for (let i = 0; i < lines.length; i++) {
   const line = lines[i];
   if (!line.startsWith('|')) continue;
 
-  const parts = line.split('|').map(s => s.trim());
+  const parts = line.split('|').map((s) => s.trim());
   if (parts.length < 10) continue;
   if (parts[1] === '#' || parts[1] === '---' || parts[1] === '') continue;
 
@@ -88,11 +80,10 @@ for (let i = 0; i < lines.length; i++) {
 
   // Strip bold from score field
   if (parts[5]) {
-    parts[5] = parts[5].replace(/\*\*/g, '');
+    parts[5] = stripBold(parts[5]);
   }
 
-  const newLine = '| ' + parts.slice(1, -1).join(' | ') + ' |';
-  lines[i] = newLine;
+  lines[i] = serializeRow(parts);
   changes++;
 
   console.log(`#${num}: "${rawStatus}" -> "${result.status}"`);
@@ -108,8 +99,7 @@ if (unknowns.length > 0) {
 console.log(`\n${changes} statuses normalized`);
 
 if (!DRY_RUN && changes > 0) {
-  copyFileSync(CARDS_FILE, CARDS_FILE + '.bak');
-  writeFileSync(CARDS_FILE, lines.join('\n'));
+  writeCards(lines);
   console.log('Written to cards.md (backup: cards.md.bak)');
 } else if (DRY_RUN) {
   console.log('(dry-run -- no changes written)');

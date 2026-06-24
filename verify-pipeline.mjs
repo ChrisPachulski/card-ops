@@ -13,19 +13,12 @@
  * Run: node card-ops/verify-pipeline.mjs
  */
 
-import { readFileSync, readdirSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-const CARD_OPS = dirname(fileURLToPath(import.meta.url));
-const CARDS_FILE = join(CARD_OPS, 'data/cards.md');
-const ADDITIONS_DIR = join(CARD_OPS, 'batch/tracker-additions');
-const REPORTS_DIR = join(CARD_OPS, 'reports');
-
-const CANONICAL_STATUSES = [
-  'evaluated', 'applied', 'approved', 'rejected',
-  'pended', 'declined', 'active', 'closed', 'skip',
-];
+import { readdirSync, existsSync } from 'fs';
+import { join } from 'path';
+import {
+  readCards, CANONICAL_LOWER, normalizeIssuer, normalizeCard, stripBold,
+  CARD_OPS, ADDITIONS_DIR,
+} from './tracker.mjs';
 
 let errors = 0;
 let warnings = 0;
@@ -35,35 +28,21 @@ function warn(msg) { console.log(`WARN:  ${msg}`); warnings++; }
 function ok(msg) { console.log(`OK:    ${msg}`); }
 
 // --- Read cards.md ---
-if (!existsSync(CARDS_FILE)) {
+const data = readCards();
+if (!data) {
   console.log('\nNo cards.md found. This is normal for a fresh setup.');
   console.log('The file will be created when you evaluate your first offer.\n');
   process.exit(0);
 }
-const content = readFileSync(CARDS_FILE, 'utf-8');
-const lines = content.split('\n');
-
-const entries = [];
-for (const line of lines) {
-  if (!line.startsWith('|')) continue;
-  const parts = line.split('|').map(s => s.trim());
-  if (parts.length < 10) continue;
-  const num = parseInt(parts[1]);
-  if (isNaN(num)) continue;
-  entries.push({
-    num, date: parts[2], issuer: parts[3], card: parts[4],
-    score: parts[5], status: parts[6], annual_fee: parts[7],
-    report: parts[8], notes: parts[9] || '',
-  });
-}
+const { lines, entries } = data;
 
 console.log(`\nChecking ${entries.length} entries in cards.md\n`);
 
 // --- Check 1: Canonical statuses ---
 let badStatuses = 0;
 for (const e of entries) {
-  const clean = e.status.replace(/\*\*/g, '').trim().toLowerCase();
-  if (!CANONICAL_STATUSES.includes(clean)) {
+  const clean = stripBold(e.status).trim().toLowerCase();
+  if (!CANONICAL_LOWER.includes(clean)) {
     error(`#${e.num}: Non-canonical status "${e.status}"`);
     badStatuses++;
   }
@@ -78,14 +57,13 @@ if (badStatuses === 0) ok('All statuses are canonical');
 const issuerCardMap = new Map();
 let dupes = 0;
 for (const e of entries) {
-  const key = e.issuer.toLowerCase().replace(/[^a-z0-9]/g, '') + '::' +
-    e.card.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+  const key = normalizeIssuer(e.issuer) + '::' + normalizeCard(e.card);
   if (!issuerCardMap.has(key)) issuerCardMap.set(key, []);
   issuerCardMap.get(key).push(e);
 }
 for (const [key, group] of issuerCardMap) {
   if (group.length > 1) {
-    warn(`Possible duplicates: ${group.map(e => `#${e.num}`).join(', ')} (${group[0].issuer} ${group[0].card})`);
+    warn(`Possible duplicates: ${group.map((e) => `#${e.num}`).join(', ')} (${group[0].issuer} ${group[0].card})`);
     dupes++;
   }
 }
@@ -107,7 +85,7 @@ if (brokenReports === 0) ok('All report links valid');
 // --- Check 4: Score format ---
 let badScores = 0;
 for (const e of entries) {
-  const s = e.score.replace(/\*\*/g, '').trim();
+  const s = stripBold(e.score).trim();
   if (!/^\d+\.?\d*\/5$/.test(s) && s !== 'N/A') {
     error(`#${e.num}: Invalid score format: "${e.score}"`);
     badScores++;
@@ -131,7 +109,7 @@ if (badRows === 0) ok('All rows properly formatted');
 // --- Check 6: Pending TSVs ---
 let pendingTsvs = 0;
 if (existsSync(ADDITIONS_DIR)) {
-  const files = readdirSync(ADDITIONS_DIR).filter(f => f.endsWith('.tsv'));
+  const files = readdirSync(ADDITIONS_DIR).filter((f) => f.endsWith('.tsv'));
   pendingTsvs = files.length;
   if (pendingTsvs > 0) {
     warn(`${pendingTsvs} pending TSVs in tracker-additions/ (not merged)`);

@@ -18,7 +18,7 @@ import pandas as pd
 import pytest
 
 # Ensure imports resolve from card-ops root
-sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from lib.rewards import (
     _best_non_capped_grocery_rate,

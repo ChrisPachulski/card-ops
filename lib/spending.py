@@ -8,7 +8,6 @@ import pandas as pd
 import yaml
 from datetime import datetime
 from pathlib import Path
-from dateutil.relativedelta import relativedelta
 
 from lib.parse import load_all_transactions
 
@@ -24,7 +23,9 @@ PROFILE_PATH = ANALYSIS_DIR / "spending-profile.yml"
 
 def _filter_recent_months(df: pd.DataFrame, months: int) -> pd.DataFrame:
     """Filter DataFrame to transactions within the last N months."""
-    cutoff = datetime.now() - relativedelta(months=months)
+    now = datetime.now()
+    m = now.month - 1 - months
+    cutoff = now.replace(year=now.year + m // 12, month=m % 12 + 1, day=1)
     return df.loc[df["date"] >= cutoff].copy()
 
 
