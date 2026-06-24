@@ -43,7 +43,9 @@ _SLUG_OVERRIDES: dict[tuple[str, str], str] = {
 # earn_rates dicts.  "everything" is the WF Active Cash catch-all key.
 ###############################################################################
 
-_CATEGORY_RATE_KEY: dict[str, str] = {
+# Spending category -> CardSpec.earn_rates key. Shared with lib.model.
+# Any category not listed falls back to "other" (callers use .get(cat, "other")).
+CATEGORY_RATE_KEY: dict[str, str] = {
     "Groceries": "groceries",
     "Whole Foods": "whole_foods",
     "Dining": "dining",
@@ -52,19 +54,6 @@ _CATEGORY_RATE_KEY: dict[str, str] = {
     "Gas": "gas",
     "Streaming": "streaming",
     "Transit": "transit",
-    "Software": "other",
-    "Telecom": "other",
-    "Shopping": "other",
-    "Home": "other",
-    "Healthcare": "other",
-    "Travel": "other",
-    "Entertainment": "other",
-    "Alcohol": "other",
-    "Childcare": "other",
-    "Insurance": "other",
-    "Utilities": "other",
-    "Shipping": "other",
-    "Other": "other",
 }
 
 
@@ -136,20 +125,12 @@ def _get_rate_overrides() -> dict[str, dict[str, float]]:
     return _RATE_OVERRIDES
 
 
-def _load_wallet_routing() -> dict[str, str]:
-    """Load the wallet_routing section from household.yml."""
-    household_path = CONFIG_DIR / "household.yml"
-    with open(household_path) as f:
-        household = yaml.safe_load(f)
-    return household.get("wallet_routing", {})
-
-
 def _rate_for_card_category(card_rates: dict[str, float], category: str) -> float:
     """Look up the earn rate a card gives for a spending category.
 
     Falls back through: category key -> ``"everything"`` -> ``"other"`` -> 0.01.
     """
-    rate_key = _CATEGORY_RATE_KEY.get(category, "other")
+    rate_key = CATEGORY_RATE_KEY.get(category, "other")
     return float(
         card_rates.get(rate_key, card_rates.get("everything", card_rates.get("other", 0.01)))
     )

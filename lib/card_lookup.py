@@ -118,41 +118,6 @@ def lookup_card(name: str) -> KnownCard | None:
     return _load_known_cards().get(index.get(name.lower().strip()))
 
 
-def list_known_cards() -> list[str]:
-    """Return all known card slugs."""
-    return list(_load_known_cards().keys())
-
-
-def search_cards(query: str) -> list[KnownCard]:
-    """Fuzzy search: return cards where query appears in any alias, name, or issuer."""
-    query_lower = query.lower().strip()
-    cards = _load_known_cards()
-    results: list[KnownCard] = []
-
-    for slug, card in cards.items():
-        searchable = [
-            slug,
-            card["issuer"].lower(),
-            card["card"].lower(),
-        ] + [a.lower() for a in card["aliases"]]
-
-        if any(query_lower in s for s in searchable):
-            results.append(card)
-
-    return results
-
-
-def earn_rates_for_card(name: str) -> dict[str, float] | None:
-    """Shortcut: look up a card and return just the earn_rates dict.
-
-    Returns None if card not found.
-    """
-    card = lookup_card(name)
-    if card is None:
-        return None
-    return dict(card["earn_rates"])
-
-
 ###############################################################################
 # Cache-miss handler: add a new card to known-cards.yml
 ###############################################################################

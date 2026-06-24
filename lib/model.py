@@ -10,6 +10,8 @@ from typing import TypedDict
 
 import yaml
 
+from lib.rewards import CATEGORY_RATE_KEY
+
 
 ###############################################################################
 # Types
@@ -35,22 +37,10 @@ class ScenarioResult(TypedDict):
 # Category Mapping
 ###############################################################################
 
-# Maps spending categories to the rate key used in CardSpec.earn_rates
-_CATEGORY_TO_RATE_KEY: dict[str, str] = {
-    "Groceries": "groceries",
-    "Whole Foods": "whole_foods",
-    "Dining": "dining",
-    "Delivery": "dining",
-    "Amazon": "amazon",
-    "Gas": "gas",
-    "Streaming": "streaming",
-    "Transit": "transit",
-}
-
 
 def _rate_key_for_category(category: str) -> str:
     """Return the earn_rates key for a spending category."""
-    return _CATEGORY_TO_RATE_KEY.get(category, "other")
+    return CATEGORY_RATE_KEY.get(category, "other")
 
 
 ###############################################################################
