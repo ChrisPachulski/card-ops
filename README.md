@@ -17,7 +17,7 @@ AI-powered credit card evaluation, portfolio optimization, and rewards tracking 
 3. Say "evaluate this card" or paste a card offer URL
 4. Claude will walk you through onboarding (credit score, income, current cards, spending, goals) on first run
 
-Your financial profile is stored locally in `config/profile.yml` and **never leaves your machine**.
+Your financial profiles are stored locally in `config/profile-chris.yml`, `config/profile-dana.yml`, and `config/household.yml` -- and **never leave your machine**.
 
 ## How it works
 
@@ -32,6 +32,9 @@ The `/card-ops` skill routes your intent to the right mode automatically:
 | "analyze my spending" | scan |
 | "optimize my portfolio" | optimize |
 | "what have I evaluated?" | tracker |
+| "when should I apply" / "application plan" | sequence |
+| batch processes offers | batch |
+| "what are my approval patterns" | patterns |
 
 ## Project structure
 
@@ -39,7 +42,10 @@ The `/card-ops` skill routes your intent to the right mode automatically:
 card-ops/
   .claude/skills/card-ops/   # Claude Code skill (invokable via /card-ops)
   config/
-    profile.example.yml       # Template -- copy to profile.yml and fill in
+    profile.example.yml       # Template -- copy to profile-{name}.yml per applicant
+    profile-chris.yml         # Chris's credit profile (gitignored)
+    profile-dana.yml          # Dana's credit profile (gitignored)
+    household.yml             # Shared spending, wallet routing, strategy (gitignored)
   data/                       # Your card tracker and pipeline (gitignored)
   docs/                       # Reference articles (issuer rules, valuations, etc.)
   modes/                      # Mode instructions for Claude
@@ -61,7 +67,8 @@ card-ops/
 The `.gitignore` is built around a strict data contract:
 
 **Never committed** (user data):
-- `config/profile.yml` -- your credit score, income, cards, spending
+- `config/profile-chris.yml`, `config/profile-dana.yml` -- credit scores, income, cards
+- `config/household.yml` -- shared spending, wallet routing, strategy
 - `statements/` -- bank statement PDFs (blocked globally: `*.pdf`, `*.ofx`, `*.qfx`, `*.csv`, `*.xlsx`)
 - `reports/` -- personalized evaluations
 - `data/cards.md` -- your card portfolio
